@@ -6,50 +6,12 @@ import javax.mail.Session;
 import javax.mail.internet.*;
 
 public abstract class AbstractEmailServer implements EmailServer{
-	/**
-	 * 
-	 */
-	protected static final EmailServer REAL_INSTANCE = new DefaultEmailServer();
-	protected static final EmailServer MOCK_INSTANCE = new MockEmailServer();
-	
-	protected static EmailServer instance = getInstanceFromMode();
 	
 	/**
 	 * 
 	 */
 	protected Session session = null;
 	
-	/**
-	 * @methodtype set
-	 */
-	public static void setInstance(EmailServer server) {
-		instance = server;
-	}
-	
-	/**
-	 * @methodtype get
-	 */
-	public static EmailServer getInstance() {
-		return instance;
-	}
-	
-	/**
-	 * @methodtype set
-	 */
-	public static void setMockInstance() {
-		instance = MOCK_INSTANCE;
-	}
-	
-	/**
-	 * @methodtype get
-	 */
-	public static EmailServer getInstanceFromMode() {
-		if (SysLog.isInProductionMode()) {
-			return REAL_INSTANCE;
-		} else {
-			return MOCK_INSTANCE;
-		}
-	}
 	
 	/**
 	 * @methodtype init

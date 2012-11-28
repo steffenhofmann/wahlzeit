@@ -36,6 +36,10 @@ public class HandlerTestSetup extends TestSetup {
 	 */
 	public UserSession session;	
 	
+		
+	
+	
+	
 	/**
 	 * 
 	 */	
@@ -48,6 +52,8 @@ public class HandlerTestSetup extends TestSetup {
 	 */	
 	protected void setUp() throws Exception {
 		super.setUp();
+		
+		EmailServer emailServer = EmailServerManager.getInstance().getMock();
 		
 		session = createUserSession();
 		ContextManager.setThreadLocalContext(session);

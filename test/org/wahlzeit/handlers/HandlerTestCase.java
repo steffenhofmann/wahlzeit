@@ -21,6 +21,7 @@
 package org.wahlzeit.handlers;
 
 import org.wahlzeit.model.*;
+import org.wahlzeit.services.EmailServer;
 
 import junit.framework.*;
 

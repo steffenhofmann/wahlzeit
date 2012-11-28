@@ -57,7 +57,7 @@ public class TellFriendTest extends HandlerTestCase {
 	 */
 	public void setUp() {
 		handler = WebPartHandlerManager.getWebFormHandler(PartUtil.TELL_FRIEND_FORM_NAME);
-		AbstractEmailServer.setMockInstance(); // no emails please
+		//AbstractEmailServer.setMockInstance(); // no emails please
 	}
 	
 	/**
@@ -87,8 +87,8 @@ public class TellFriendTest extends HandlerTestCase {
 		EmailAddress bcc = session.cfg().getAuditEmailAddress();
 		String subject = "Coolest website ever!";
 		String body = "You've got to check this out!";
-		AbstractEmailServer.setMockInstance();
-		EmailServer server = AbstractEmailServer.getInstance();
+		//AbstractEmailServer.setMockInstance();
+		EmailServer server = EmailServerManager.getInstance().getMock();
 		server.sendEmail(from, to, bcc, subject, body);
 		
 
@@ -101,6 +101,7 @@ public class TellFriendTest extends HandlerTestCase {
 		handler.handlePost(session, args);
 		
 		server.sendEmail(from, to, bcc, subject, body);
+		EmailServerManager.getInstance().release(server);
 		handler.handlePost(session, Collections.EMPTY_MAP); // will fail if email is sent		
 	}	
 

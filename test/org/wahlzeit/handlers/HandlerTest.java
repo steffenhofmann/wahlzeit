@@ -21,6 +21,7 @@ package org.wahlzeit.handlers;
 
 import junit.framework.*;
 import org.wahlzeit.model.*;
+import org.wahlzeit.services.EmailServer;
 
 public interface HandlerTest extends Test {
 
@@ -28,5 +29,4 @@ public interface HandlerTest extends Test {
 	 * 
 	 */
 	public void setUserSession(UserSession mySession);
-
 }

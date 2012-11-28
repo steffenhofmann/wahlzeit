@@ -211,7 +211,7 @@ public class UserManager extends ObjectManager {
 	 * 
 	 */
 	public void emailWelcomeMessage(UserSession ctx, User user) {
-		EmailServer emailServer = AbstractEmailServer.getInstance();
+		EmailServer emailServer =  EmailServerManager.getInstance().get();
 
 		EmailAddress from = ctx.cfg().getAdministratorEmailAddress();
 		EmailAddress to = user.getEmailAddress();
@@ -225,13 +225,14 @@ public class UserManager extends ObjectManager {
 		emailBody += ctx.cfg().getGeneralEmailFooter() + "\n\n";
 
 		emailServer.sendEmail(from, to, ctx.cfg().getAuditEmailAddress(), emailSubject, emailBody);
+		EmailServerManager.getInstance().release(emailServer);
 	}
 	
 	/**
 	 * 
 	 */
 	public void emailConfirmationRequest(UserSession ctx, User user) {
-		EmailServer emailServer = AbstractEmailServer.getInstance();
+		EmailServer emailServer =  EmailServerManager.getInstance().get();
 
 		EmailAddress from = ctx.cfg().getAdministratorEmailAddress();
 		EmailAddress to = user.getEmailAddress();
@@ -243,6 +244,7 @@ public class UserManager extends ObjectManager {
 		emailBody += ctx.cfg().getGeneralEmailFooter() + "\n\n";
 
 		emailServer.sendEmail(from, to, ctx.cfg().getAuditEmailAddress(), emailSubject, emailBody);
+		EmailServerManager.getInstance().release(emailServer);
 	}
 	
 	/**

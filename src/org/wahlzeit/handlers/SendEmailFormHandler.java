@@ -31,6 +31,7 @@ import org.wahlzeit.model.UserManager;
 import org.wahlzeit.model.UserSession;
 import org.wahlzeit.services.EmailServer;
 import org.wahlzeit.services.AbstractEmailServer;
+import org.wahlzeit.services.EmailServerManager;
 import org.wahlzeit.webparts.WebPart;
 
 
@@ -123,11 +124,12 @@ public class SendEmailFormHandler extends AbstractWebFormHandler {
 		User toUser = userManager.getUserByName(photo.getOwnerName());
 		User fromUser = (User) ctx.getClient();
 
-		EmailServer emailServer = AbstractEmailServer.getInstance();
+		EmailServer emailServer = EmailServerManager.getInstance().get();
 		emailSubject = ctx.cfg().getSendEmailSubjectPrefix() + emailSubject;
 		emailBody = ctx.cfg().getSendEmailBodyPrefix() + emailBody + ctx.cfg().getSendEmailBodyPostfix();
 		emailServer.sendEmail(fromUser.getEmailAddress(), toUser.getEmailAddress(), ctx.cfg().getAuditEmailAddress(), emailSubject, emailBody);
-
+		EmailServerManager.getInstance().release(emailServer);
+		
 		UserLog.logPerformedAction("SendEmail");
 		
 		ctx.setMessage(ctx.cfg().getEmailWasSent() + toUser.getName() + "!");

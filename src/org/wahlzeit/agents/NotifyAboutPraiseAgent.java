@@ -30,6 +30,7 @@ import org.wahlzeit.model.UserLog;
 import org.wahlzeit.services.EmailAddress;
 import org.wahlzeit.services.EmailServer;
 import org.wahlzeit.services.AbstractEmailServer;
+import org.wahlzeit.services.EmailServerManager;
 import org.wahlzeit.services.SysConfig;
 
 
@@ -118,8 +119,9 @@ public class NotifyAboutPraiseAgent extends Agent {
 		emailBody += cfg.getNotifyAboutPraiseEmailPostScriptum() + "\n\n----\n";
 		emailBody += cfg.getGeneralEmailFooter() + "\n\n";
 
-		EmailServer emailServer = AbstractEmailServer.getInstance();
+		EmailServer emailServer = EmailServerManager.getInstance().get();
 		emailServer.sendEmail(from, to, emailSubject, emailBody);
+		EmailServerManager.getInstance().release(emailServer);
 	}
 
 }

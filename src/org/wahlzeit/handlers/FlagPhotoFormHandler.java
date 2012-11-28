@@ -97,7 +97,7 @@ public class FlagPhotoFormHandler extends AbstractWebFormHandler {
 		pcm.addPhotoCase(photoCase);
 		
 		EmailAddress from = EmailAddress.getFromString(flagger);
-		EmailServer emailServer = AbstractEmailServer.getInstance();
+		EmailServer emailServer = EmailServerManager.getInstance().get();
 		EmailAddress to = ctx.cfg().getModeratorEmailAddress();
 
 		String emailSubject = "Photo: " + id + " of user: " + photo.getOwnerName() + " got flagged";
@@ -106,6 +106,7 @@ public class FlagPhotoFormHandler extends AbstractWebFormHandler {
 		emailBody += "Explanation: " + explanation + "\n\n";
 		
 		emailServer.sendEmail(from, to, ctx.cfg().getAuditEmailAddress(), emailSubject, emailBody);
+		EmailServerManager.getInstance().release(emailServer);
 		
 		ctx.setEmailAddress(from);
 
