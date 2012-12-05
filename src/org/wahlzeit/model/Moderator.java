@@ -35,6 +35,9 @@ public class Moderator extends User {
 	 */
 	public Moderator(String myName, String myPassword, String myEmailAddress, long vc) {
 		this(myName, myPassword, EmailAddress.getFromString(myEmailAddress), vc);
+		
+		//ensure
+		assert(rights == AccessRights.MODERATOR && emailAddress.toString() == myEmailAddress && getName() == myName && getPassword() == myPassword && getConfirmationCode() == vc);
 	}
 	
 	/**
@@ -42,6 +45,9 @@ public class Moderator extends User {
 	 */
 	public Moderator(String myName, String myPassword, EmailAddress myEmailAddress, long vc) {
 		initialize(AccessRights.MODERATOR, myEmailAddress, myName, myPassword, vc);
+		
+		//ensure
+		assert(rights == AccessRights.MODERATOR && emailAddress == myEmailAddress && getName() == myName && getPassword() == myPassword && getConfirmationCode() == vc);
 	}
 	
 	/**

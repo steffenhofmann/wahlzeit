@@ -36,6 +36,9 @@ public class Administrator extends Moderator {
 	 */
 	public Administrator(String myName, String myPassword, String myEmailAddress, long vc) {
 		this(myName, myPassword, EmailAddress.getFromString(myEmailAddress), vc);
+		
+		//ensure
+		assert(rights == AccessRights.ADMINISTRATOR && emailAddress.toString() == myEmailAddress && getName() == myName && getPassword() == myPassword && getConfirmationCode() == vc);
 	}
 	
 	/**
@@ -43,6 +46,9 @@ public class Administrator extends Moderator {
 	 */
 	public Administrator(String myName, String myPassword, EmailAddress myEmailAddress, long vc) {
 		initialize(AccessRights.ADMINISTRATOR, myEmailAddress, myName, myPassword, vc);
+		
+		//ensure
+		assert(rights == AccessRights.ADMINISTRATOR && emailAddress == myEmailAddress && getName() == myName && getPassword() == myPassword && getConfirmationCode() == vc);
 	}
 	
 	/**

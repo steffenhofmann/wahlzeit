@@ -49,8 +49,14 @@ public enum AccessRights implements EnumValue {
 	 * 
 	 */
 	public static AccessRights getFromInt(int myValue) throws IllegalArgumentException {
+		//require
 		assertIsValidIntValue(myValue);
-		return allValues[myValue];
+		
+		AccessRights ret = allValues[myValue]; 
+		
+		//ensure
+		assert(ret != null && ( ((myValue==0)&&(ret==NONE)) || ((myValue==1)&&(ret==GUEST)) || ((myValue==2)&&(ret==USER)) || ((myValue==3)&&(ret==MODERATOR)) || ((myValue==4)&&(ret==ADMINISTRATOR))));
+		return ret;
 	}
 
 	/**
@@ -64,8 +70,12 @@ public enum AccessRights implements EnumValue {
 	 * 
 	 */
 	public static AccessRights getFromString(String myRights) throws IllegalArgumentException {
+		//require (case myRights.length == 0 handled through exception)
+		assert(myRights != null);
+		
 		for (AccessRights rights : AccessRights.values()) {
 			if (valueNames[rights.asInt()].equals(myRights)) {
+				assert(rights != null && rights.asString() == myRights);
 				return rights;
 			}
 		}
@@ -82,14 +92,23 @@ public enum AccessRights implements EnumValue {
 	 * 
 	 */
 	private AccessRights(int myValue) {
+		//require
+		assertIsValidIntValue(myValue);
+		
 		value = myValue;
+		
+		//ensure
+		assert(asInt() == myValue);
+		
+		//invariant
+		assertInvariant();
 	}
 	
 	/**
 	 * 
 	 * @methodtype conversion
 	 */
-	public int asInt() {
+	public int asInt() {	
 		return value;
 	}
 
@@ -98,7 +117,17 @@ public enum AccessRights implements EnumValue {
 	 * @methodtype conversion
 	 */
 	public String asString() {
-		return valueNames[value];
+		//require: just correct state of class (invariant)
+		
+		String ret = valueNames[value];
+		
+		//ensure
+		assert (ret!=null && ret.length() > 0);
+		
+		//invariant
+		assertInvariant();
+				
+		return ret;
 	}
 	
 	/**
@@ -106,7 +135,14 @@ public enum AccessRights implements EnumValue {
 	 * @methodtype get
 	 */
 	public AccessRights[] getAllValues() {
-		return allValues;
+		AccessRights[] ret = allValues;
+		
+		//ensure
+		assert(ret != null);
+		
+		//invariant
+		assertInvariant();
+		return ret;
 	}
 	
 	/**
@@ -121,6 +157,11 @@ public enum AccessRights implements EnumValue {
 	 * @methodtype comparison
 	 */
 	public static boolean hasRights(AccessRights a, AccessRights b) {
+		//require
+		assert(a != null && b != null);
+		assertIsValidIntValue(a.value);
+		assertIsValidIntValue(b.value);
+		
 		return a.value >= b.value;
 	}
 	
@@ -132,6 +173,14 @@ public enum AccessRights implements EnumValue {
 		if ((myValue < 0) || (myValue > 4)) {
 			throw new IllegalArgumentException("invalid AccessRights int: " + myValue);
 		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void assertInvariant(){
+		//ensure a correct state (value) of this class
+		assertIsValidIntValue(value);
 	}
 		
 }

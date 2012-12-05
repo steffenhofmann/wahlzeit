@@ -52,8 +52,17 @@ public abstract class Client {
 	 * @methodtype initialization
 	 */
 	protected void initialize(AccessRights myRights, EmailAddress myEmailAddress) {
+		//require
+		assert (myRights != null && myEmailAddress != null);
+		
 		rights = myRights;
 		setEmailAddress(myEmailAddress);
+		
+		//ensure
+		assert(getRights()==myRights && getEmailAddress()==myEmailAddress);
+		
+		//invariant
+		assertInvariant();
 	}
 
 	/**
@@ -67,7 +76,16 @@ public abstract class Client {
 	 * @methodtype set
 	 */
 	public void setRights(AccessRights newRights) {
+		//require
+		assert(newRights != null);
+		
 		rights = newRights;
+		
+		//ensure
+		assert(getRights() == newRights);
+		
+		//invariant
+		assertInvariant();
 	}
 	
 	/**
@@ -75,7 +93,14 @@ public abstract class Client {
 	 * @methodtype boolean-query
 	 */
 	public boolean hasRights(AccessRights otherRights) {
-		return AccessRights.hasRights(rights, otherRights);
+		//require
+		assert(otherRights != null && rights != null);
+		
+		boolean ret = AccessRights.hasRights(rights, otherRights); 
+		
+		//invariant
+		assertInvariant();
+		return ret;
 	}
 	
 	/**
@@ -97,8 +122,7 @@ public abstract class Client {
 	 * 
 	 * @methodtype boolean-query
 	 */
-	public boolean hasModeratorRights
-	() {
+	public boolean hasModeratorRights() {
 		return hasRights(AccessRights.MODERATOR);
 	}
 	
@@ -123,7 +147,25 @@ public abstract class Client {
 	 * @methodtype set
 	 */
 	public void setEmailAddress(EmailAddress newEmailAddress) {
+		//require
+		assert(newEmailAddress != null);
+		
 		emailAddress = newEmailAddress;
+		
+		//ensure
+		assert(getEmailAddress() == newEmailAddress);
+		
+		//invariant
+		assertInvariant();
+	}
+	
+	/**
+	 * 
+	 */
+	private void assertInvariant() {
+		//ensure valid state of class: rights/email set 
+		assert(rights != null && ((rights == AccessRights.NONE)||(rights == AccessRights.GUEST)||(rights == AccessRights.USER)||(rights == AccessRights.MODERATOR)||(rights == AccessRights.ADMINISTRATOR)));
+		assert(emailAddress != null);
 	}
 	
 }

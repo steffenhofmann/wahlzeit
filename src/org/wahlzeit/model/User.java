@@ -76,14 +76,25 @@ public class User extends Client implements Persistent {
 	 * 
 	 */
 	public static synchronized void setLastUserId(int newId) {
+		//require
+		assert(newId > 0);
+		
 		lastUserId = newId;
+		
+		//invariant
+		assertInvariantStatic();
 	}
 	
 	/**
 	 * 
 	 */
 	public static synchronized int getNextUserId() {
-		return ++lastUserId;
+		int ret = ++lastUserId;
+		
+		//invariant
+		assertInvariantStatic();
+		
+		return ret;
 	}
 
 	/**
@@ -125,6 +136,12 @@ public class User extends Client implements Persistent {
 	 */
 	public User(String myName, String myPassword, String myEmailAddress, long vc) {
 		this(myName, myPassword, EmailAddress.getFromString(myEmailAddress), vc);
+		
+		//ensure
+		assert(rights == AccessRights.USER && emailAddress.toString() == myEmailAddress && getName() == myName && getPassword() == myPassword && getConfirmationCode() == vc);
+		
+		//invariant
+		assertInvariant();
 	}
 	
 	/**
@@ -132,13 +149,25 @@ public class User extends Client implements Persistent {
 	 */
 	public User(String myName, String myPassword, EmailAddress myEmailAddress, long vc) {
 		initialize(AccessRights.USER, myEmailAddress, myName, myPassword, vc);
+		
+		//ensure
+		assert(rights == AccessRights.USER && emailAddress == myEmailAddress && getName() == myName && getPassword() == myPassword && getConfirmationCode() == vc);
+		
+		//invariant
+		assertInvariant();
 	}
 	
 	/**
 	 * 
 	 */
 	public User(ResultSet rset) throws SQLException {
+		//require
+		assert(rset != null);
+		
 		readFrom(rset);
+		
+		//invariant
+		assertInvariant();
 	}
 	
 	/**
@@ -152,6 +181,9 @@ public class User extends Client implements Persistent {
 	 * @methodtype initialization
 	 */
 	protected void initialize(AccessRights r, EmailAddress ea, String n, String p, long vc) {
+		//require
+		assert (r !=null && ea != null && n!= null && n.length() > 0 && p!=null && p.length() > 0);
+		
 		super.initialize(r, ea);
 		
 		id = getNextUserId();
@@ -165,6 +197,12 @@ public class User extends Client implements Persistent {
 		homePage = getDefaultHomePage();
 
 		incWriteCount();
+		
+		//ensure
+		assert(isDirty() && getRights() == r && getEmailAddress() == ea && getName() == n && getPassword() == p && getConfirmationCode() == vc);
+		
+		//invariant
+		assertInvariant();
 	}
 	
 	/**
@@ -186,6 +224,9 @@ public class User extends Client implements Persistent {
 	 */
 	public final void incWriteCount() {
 		writeCount++;
+		
+		//ensure
+		assert(isDirty());
 	}
 	
 	/**
@@ -193,6 +234,9 @@ public class User extends Client implements Persistent {
 	 */
 	public void resetWriteCount() {
 		writeCount = 0;
+		
+		//ensure
+		assert(!isDirty());
 	}
 	
 	/**
@@ -207,6 +251,9 @@ public class User extends Client implements Persistent {
 	 * @methodtype command
 	 */
 	public void readFrom(ResultSet rset) throws SQLException {
+		//ensure
+		assert (rset != null);
+		
 		id = rset.getInt("id");
 		name = rset.getString("name");
 		nameAsTag = rset.getString("name_as_tag");
@@ -222,12 +269,18 @@ public class User extends Client implements Persistent {
 		photos = PhotoManager.getInstance().findPhotosByOwner(name);
 		userPhoto = PhotoManager.getPhoto(PhotoId.getId(rset.getInt("photo")));
 		creationTime = rset.getLong("creation_time");
+		
+		//invariant
+		assertInvariant();
 	}
 	
 	/**
 	 * 
 	 */
 	public void writeOn(ResultSet rset) throws SQLException {
+		//ensure
+		assert (rset != null);
+				
 		rset.updateInt("id", id);
 		rset.updateString("name", name);
 		rset.updateString("name_as_tag", nameAsTag);
@@ -242,19 +295,31 @@ public class User extends Client implements Persistent {
 		rset.updateLong("confirmation_code", confirmationCode);
 		rset.updateInt("photo", (userPhoto == null) ? 0 : userPhoto.getId().asInt());
 		rset.updateLong("creation_time", creationTime);
+		
+		//invariant
+		assertInvariant();
 	}
 
 	/**
 	 * 
 	 */
 	public void writeId(PreparedStatement stmt, int pos) throws SQLException {
+		//require
+		assert(stmt != null && pos >= 0);
+		
 		stmt.setInt(pos, id);
+		
+		//invariant
+		assertInvariant();
 	}
 	
 	/**
 	 * 
 	 */
 	public void setEmailAddress(EmailAddress myEmailAddress) {
+		//require
+		assert(myEmailAddress != null);
+		
 		super.setEmailAddress(myEmailAddress);
 		incWriteCount();
 		
@@ -262,6 +327,12 @@ public class User extends Client implements Persistent {
 			Photo photo = i.next();
 			photo.setOwnerEmailAddress(emailAddress);
 		}
+		
+		//ensure
+		assert(isDirty() && getEmailAddress() == myEmailAddress);
+		
+		//invariant
+		assertInvariant();
 	}
 	
 	/**
@@ -289,8 +360,17 @@ public class User extends Client implements Persistent {
 	 * 
 	 */
 	public void setPassword(String newPassword) {
+		//require
+		assert(newPassword != null && newPassword.length() > 0);
+		
 		password = newPassword;
 		incWriteCount();
+		
+		//ensure
+		assert(isDirty() && getPassword() == newPassword);
+		
+		//invariant
+		assertInvariant();
 	}
 	
 	/**
@@ -311,6 +391,9 @@ public class User extends Client implements Persistent {
 	 * 
 	 */
 	public void setLanguage(Language newLanguage) {
+		//require
+		assert(newLanguage != null);
+		
 		language = newLanguage;
 		incWriteCount();
 		
@@ -318,6 +401,12 @@ public class User extends Client implements Persistent {
 			Photo photo = i.next();
 			photo.setOwnerLanguage(language);
 		}
+		
+		//ensure
+		assert(isDirty() && getLanguage() == newLanguage);
+		
+		//invariant
+		assertInvariant();
 	}
 	
 	/**
@@ -352,6 +441,12 @@ public class User extends Client implements Persistent {
 			Photo photo = i.next();
 			photo.setOwnerNotifyAboutPraise(notifyAboutPraise);
 		}
+		
+		//ensure
+		assert(isDirty() && getNotifyAboutPraise() == notify);
+				
+		//invariant
+		assertInvariant();
 	}
 	
 	/**
@@ -365,6 +460,9 @@ public class User extends Client implements Persistent {
 	 * 
 	 */
 	public void setHomePage(URL newHomePage) {
+		//require
+		assert(newHomePage != null);
+		
 		homePage = newHomePage;
 		incWriteCount();
 		
@@ -372,6 +470,9 @@ public class User extends Client implements Persistent {
 			Photo photo = i.next();
 			photo.setOwnerHomePage(homePage);
 		}
+		
+		//ensure
+		assert(isDirty() && getHomePage() == newHomePage);
 	}
 	
 	/**
@@ -392,8 +493,17 @@ public class User extends Client implements Persistent {
 	 * 
 	 */
 	public void setGender(Gender newGender) {
+		//require
+		assert(newGender != null);
+		
 		gender = newGender;
 		incWriteCount();
+		
+		//ensure 
+		assert(isDirty() && getGender() == newGender);
+		
+		//invariant
+		assertInvariant();
 	}
 
 	/**
@@ -408,8 +518,17 @@ public class User extends Client implements Persistent {
 	 * @methodtype set
 	 */
 	public void setStatus(UserStatus newStatus) {
+		//require
+		assert(newStatus != null);
+		
 		status = newStatus;
 		incWriteCount();
+		
+		//ensure
+		assert(isDirty() && getStatus() == newStatus);
+		
+		//invariant
+		assertInvariant();
 	}
 
 	/**
@@ -425,6 +544,12 @@ public class User extends Client implements Persistent {
 	public void setConfirmed() {
 		setStatus(status.asConfirmed());
 		incWriteCount();
+		
+		//ensure
+		assert(isDirty() && getStatus().isConfirmed());
+		
+		//invariant
+		assertInvariant();	
 	}
 	
 	/**
@@ -445,8 +570,17 @@ public class User extends Client implements Persistent {
 	 * 
 	 */
 	public void setUserPhoto(Photo newPhoto) {
+		//require
+		assert(newPhoto != null);
+		
 		userPhoto = newPhoto;
 		incWriteCount();
+		
+		//ensure
+		assert(isDirty() && getUserPhoto() == newPhoto);
+		
+		//invariant
+		assertInvariant();
 	}
 	
 	/**
@@ -460,6 +594,10 @@ public class User extends Client implements Persistent {
 	 * 
 	 */
 	public void addPhoto(Photo newPhoto) {
+		//require
+		assert(newPhoto != null);
+		int size = getNoPhotos();
+		
 		photos.add(newPhoto);
 		incWriteCount();
 
@@ -469,14 +607,33 @@ public class User extends Client implements Persistent {
 		newPhoto.setOwnerEmailAddress(emailAddress);
 		newPhoto.setOwnerLanguage(language);
 		newPhoto.setOwnerHomePage(homePage);
+		
+		//ensure
+		assert(isDirty());
+		assert(getNoPhotos() == size+1);
+		
+		//invariant
+		assertInvariant();		
 	}
 	
 	/**
 	 * 
 	 */
 	public void removePhoto(Photo notMyPhoto) {
+		//require
+		assert(notMyPhoto != null);
+		assert(!(getUserPhoto() != null && notMyPhoto != getUserPhoto()));
+		int size = getNoPhotos();
+		
 		photos.remove(notMyPhoto);
 		incWriteCount();
+		
+		//ensure
+		assert(isDirty());
+		assert(getNoPhotos() == size-1);
+		
+		//invariant
+		assertInvariant();	
 	}
 	
 	/**
@@ -499,6 +656,13 @@ public class User extends Client implements Persistent {
 	public Photo[] getPhotosReverseOrderedByPraise() {
 		Photo[] result = photos.toArray(new Photo[0]);
 		Arrays.sort(result, getPhotoByPraiseReverseComparator());
+		
+		//ensure
+		assert(!(getNoPhotos() == 0 && result.length > 0));
+		
+		//invariant
+		assertInvariantStatic();
+		
 		return result;
 	}
 	
@@ -521,6 +685,28 @@ public class User extends Client implements Persistent {
 				}
 			}
 		};
+	}
+	
+	/*
+	 * 
+	 */
+	private static void assertInvariantStatic(){
+		assert(lastUserId >= 0);
+	}
+	
+	/*
+	 * 
+	 */
+	private void assertInvariant(){
+		assert(id > 0);
+		assert(name != null && name.length() > 0);
+		assert(nameAsTag != null && Tags.asTag(name)==nameAsTag);
+		assert(password != null && password.length() > 0);
+		
+		assert(language != null);
+		assert(homePage != null && homePage == StringUtil.asUrl(SysConfig.getSiteUrlAsString()));
+		assert(gender != null);
+		assert(status != null);
 	}
 	
 }

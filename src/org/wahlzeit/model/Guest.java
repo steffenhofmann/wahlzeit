@@ -35,6 +35,9 @@ public class Guest extends Client {
 	 */
 	public Guest() {
 		initialize(AccessRights.GUEST, EmailAddress.NONE);
+		
+		//ensure
+		assert(rights == AccessRights.GUEST && emailAddress == EmailAddress.NONE);
 	}
 
 }
