@@ -46,7 +46,13 @@ public enum FlagReason implements EnumValue {
 	 * 
 	 */
 	public static FlagReason getFromInt(int myValue) throws IllegalArgumentException {
+		//require
 		assertIsValidFlagReasonAsInt(myValue);
+		
+		FlagReason ret = allValues[myValue];
+		
+		//ensure
+		assert(ret != null && (  ((myValue==0)&&(ret==MISMATCH)) || ((myValue==1)&&(ret==OFFENSIVE)) || ((myValue==2)&&(ret==COPYRIGHT)) || ((myValue==3)&&(ret==OTHER)) ) );
 		return allValues[myValue];
 	}
 	
@@ -70,8 +76,13 @@ public enum FlagReason implements EnumValue {
 	 * 
 	 */
 	public static FlagReason getFromString(String reason) throws IllegalArgumentException {
+		//require
+		assert(reason != null);
+		
 		for (FlagReason fr : FlagReason.values()) {
 			if (valueNames[fr.asInt()].equals(reason)) {
+				//ensure
+				assert(fr != null && fr.asString() == reason);
 				return fr;
 			}
 		}
@@ -88,7 +99,16 @@ public enum FlagReason implements EnumValue {
 	 * 
 	 */
 	private FlagReason(int myValue) {
+		//require
+		assertIsValidFlagReasonAsInt(myValue);
+		
 		value = myValue;
+		
+		//ensure
+		assert(asInt() == myValue);
+		
+		//invariant
+		assertInvariant();
 	}
 	
 	/**
@@ -104,6 +124,13 @@ public enum FlagReason implements EnumValue {
 	 * @methodtype conversion
 	 */
 	public String asString() {
+		String ret = valueNames[value];
+		
+		//ensure
+		assert (ret != null && ret.length() > 0);
+		
+		//invariant
+		assertInvariant();
 		return valueNames[value];
 	}
 	
@@ -112,7 +139,14 @@ public enum FlagReason implements EnumValue {
 	 * @methodtype get
 	 */
 	public FlagReason[] getAllValues() {
-		return allValues;
+		FlagReason[] ret = allValues; 
+		
+		//ensure
+		assert(ret != null);
+		
+		//invariant 
+		assertInvariant();
+		return ret;
 	}
 	
 	/**
@@ -121,6 +155,11 @@ public enum FlagReason implements EnumValue {
 	 */
 	public String getTypeName() {
 		return "FlagReason";
+	}
+	
+	private void assertInvariant(){
+		//ensure correct status (value) of this class
+		assertIsValidFlagReasonAsInt(value);
 	}
 		
 }

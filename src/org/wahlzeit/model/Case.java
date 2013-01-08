@@ -34,27 +34,27 @@ public abstract class Case extends DataObject {
 	/**
 	 * 0 is never returned, first value is 1
 	 */
-	protected static int lastCaseId = 0;
+	protected static CaseId lastCaseId = CaseId.NULL_ID;
 	
 	/**
 	 * @methodtype get
 	 */
-	public static synchronized int getLastCaseId() {
+	public static synchronized CaseId getLastCaseId() {
 		return lastCaseId;
 	}
 	
 	/**
 	 * @methodtype set
 	 */
-	public static synchronized void setLastCaseId(int newId) {
+	public static synchronized void setLastCaseId(CaseId newId) {
 		lastCaseId = newId;
 	}
 	
 	/**
 	 * @methodtype idiom
 	 */
-	public static synchronized int getNextCaseId() {
-		return ++lastCaseId;
+	public static synchronized CaseId getNextCaseId() {
+		return new CaseId(lastCaseId.asInt() + 1);
 	}
 
 }
