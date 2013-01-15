@@ -74,7 +74,7 @@ public class CreateUser extends ModelMain {
 	protected void execute() throws Exception {
 		UserManager userManager = UserManager.getInstance();
 		long confirmationCode = userManager.createConfirmationCode();
-		User user = new User(userName, password, "info@wahlzeit.org", confirmationCode);
+		User user = (User)ClientCore.createWithUserRole(userName, password, "info@wahlzeit.org", confirmationCode).getRole();
 		userManager.addUser(user);
 		
 		PhotoManager photoManager = PhotoManager.getInstance();

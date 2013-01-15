@@ -28,13 +28,18 @@ import org.wahlzeit.services.*;
  * @author dirkriehle
  *
  */
-public class Guest extends Client {
+public class Guest extends ClientRole {
 
 	/**
 	 * 
 	 */
 	public Guest() {
-		initialize(AccessRights.GUEST, EmailAddress.EMPTY);
+		core.initialize(AccessRights.GUEST, EmailAddress.EMPTY);
+	}
+
+	@Override
+	public void setEmailAddress(EmailAddress newEmailAddress) {
+		core.setEmailAddress(newEmailAddress);
 	}
 
 }

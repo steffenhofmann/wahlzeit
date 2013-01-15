@@ -28,27 +28,18 @@ import org.wahlzeit.services.*;
  * @author dirkriehle
  *
  */
-public class Moderator extends User {
+public class Moderator extends UserRole {
+	public static String ROLE_NAME = "moderator";
+	/**
+	 * 
+	 */
+	protected Moderator(User core) {
+		setCore(core);
+		core.setRights(AccessRights.MODERATOR);
+	}
 
-	/**
-	 * 
-	 */
-	public Moderator(String myName, String myPassword, String myEmailAddress, long vc) {
-		this(myName, myPassword, EmailAddress.getFromString(myEmailAddress), vc);
+	@Override
+	public String getRoleName() {
+		return ROLE_NAME;
 	}
-	
-	/**
-	 * 
-	 */
-	public Moderator(String myName, String myPassword, EmailAddress myEmailAddress, long vc) {
-		initialize(AccessRights.MODERATOR, myEmailAddress, myName, myPassword, vc);
-	}
-	
-	/**
-	 * 
-	 */
-	protected Moderator() {
-		// do nothing
-	}
-		
 }

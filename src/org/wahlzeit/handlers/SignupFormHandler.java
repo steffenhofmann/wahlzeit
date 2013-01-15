@@ -23,6 +23,8 @@ package org.wahlzeit.handlers;
 import java.util.*;
 
 import org.wahlzeit.model.AccessRights;
+import org.wahlzeit.model.Client;
+import org.wahlzeit.model.ClientCore;
 import org.wahlzeit.model.User;
 import org.wahlzeit.model.UserLog;
 import org.wahlzeit.model.UserManager;
@@ -107,7 +109,10 @@ public class SignupFormHandler extends AbstractWebFormHandler {
 		}
 
 		long confirmationCode = userManager.createConfirmationCode();
-		User user = new User(userName, password, emailAddress, confirmationCode);
+		
+		Client client = ClientCore.createWithUserRole(userName, password, emailAddress, confirmationCode);
+		User user = (User) client.getRole();
+		
 		userManager.addUser(user);
 		
 		userManager.emailWelcomeMessage(ctx, user);

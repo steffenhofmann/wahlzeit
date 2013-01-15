@@ -36,7 +36,38 @@ import org.wahlzeit.utils.*;
  * @author dirkriehle
  *
  */
-public class User extends Client implements Persistent {
+public class User extends ClientRole implements Persistent {
+	
+	/**
+	 * 
+	 */
+	private HashMap<String,UserRole> roles = new HashMap<String,UserRole>();
+	
+	/**
+	 * 
+	 */
+	public boolean addUserRole(UserRole role){
+		if(roles.get(role.getRoleName()) == null){
+			roles.put(role.getRoleName(), role);
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean removeUserRole(UserRole role){
+		return roles.remove(role.getRoleName()) != null;
+	}
+	
+	/**
+	 * 
+	 */
+	public UserRole getUserRole(String rolename){
+		return roles.get(rolename);
+	}
 	
 	/**
 	 * 
@@ -151,8 +182,8 @@ public class User extends Client implements Persistent {
 	/**
 	 * @methodtype initialization
 	 */
-	protected void initialize(AccessRights r, EmailAddress ea, String n, String p, long vc) {
-		super.initialize(r, ea);
+	public void initialize(AccessRights r, EmailAddress ea, String n, String p, long vc) {
+		core.initialize(r, ea);
 		
 		id = getNextUserId();
 		
@@ -210,9 +241,9 @@ public class User extends Client implements Persistent {
 		id = rset.getInt("id");
 		name = rset.getString("name");
 		nameAsTag = rset.getString("name_as_tag");
-		emailAddress = EmailAddress.getFromString(rset.getString("email_address"));
+		core.setEmailAddress(EmailAddress.getFromString(rset.getString("email_address")));
 		password = rset.getString("password");
-		rights = AccessRights.getFromInt(rset.getInt("rights"));
+		core.setRights(AccessRights.getFromInt(rset.getInt("rights")));
 		language = Language.getFromInt(rset.getInt("language"));
 		notifyAboutPraise = rset.getBoolean("notify_about_praise");
 		homePage = StringUtil.asUrlOrDefault(rset.getString("home_page"), getDefaultHomePage());
@@ -231,9 +262,9 @@ public class User extends Client implements Persistent {
 		rset.updateInt("id", id);
 		rset.updateString("name", name);
 		rset.updateString("name_as_tag", nameAsTag);
-		rset.updateString("email_address", (emailAddress == null) ? "" : emailAddress.asString());
+		rset.updateString("email_address", (core.getEmailAddress() == null) ? "" : core.getEmailAddress().asString());
 		rset.updateString("password", password);
-		rset.updateInt("rights", rights.asInt());
+		rset.updateInt("rights", core.getRights().asInt());
 		rset.updateInt("language", language.asInt());
 		rset.updateBoolean("notify_about_praise", notifyAboutPraise);
 		rset.updateString("home_page", homePage.toString());
@@ -255,12 +286,12 @@ public class User extends Client implements Persistent {
 	 * 
 	 */
 	public void setEmailAddress(EmailAddress myEmailAddress) {
-		super.setEmailAddress(myEmailAddress);
+		core.setEmailAddress(myEmailAddress);
 		incWriteCount();
 		
 		for (Iterator<Photo> i = photos.iterator(); i.hasNext(); ) {
 			Photo photo = i.next();
-			photo.setOwnerEmailAddress(emailAddress);
+			photo.setOwnerEmailAddress(core.getEmailAddress());
 		}
 	}
 	
@@ -466,7 +497,7 @@ public class User extends Client implements Persistent {
 		newPhoto.setOwnerId(id);
 		newPhoto.setOwnerName(name);
 		newPhoto.setOwnerNotifyAboutPraise(notifyAboutPraise);
-		newPhoto.setOwnerEmailAddress(emailAddress);
+		newPhoto.setOwnerEmailAddress(core.getEmailAddress());
 		newPhoto.setOwnerLanguage(language);
 		newPhoto.setOwnerHomePage(homePage);
 	}
@@ -522,5 +553,4 @@ public class User extends Client implements Persistent {
 			}
 		};
 	}
-	
 }

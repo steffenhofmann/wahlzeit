@@ -125,13 +125,15 @@ public class UserManager extends ObjectManager {
 
 		AccessRights rights = AccessRights.getFromInt(rset.getInt("rights"));
 		if (rights == AccessRights.USER) {
-			result = new User();
+			result = (User)ClientCore.createWithUserRole().getRole();
 			result.readFrom(rset);
 		} else if (rights == AccessRights.MODERATOR) {
-			result = new Moderator();
+			result = (User)ClientCore.createWithUserRole().getRole();
+			result.addUserRole(new Moderator(result));
 			result.readFrom(rset);
 		} else if (rights == AccessRights.ADMINISTRATOR) {
-			result = new Administrator();
+			result = (User)ClientCore.createWithUserRole().getRole();
+			result.addUserRole(new Administrator(result));
 			result.readFrom(rset);
 		} else {
 			SysLog.logInfo("received NONE rights value");

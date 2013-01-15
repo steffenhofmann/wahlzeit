@@ -29,27 +29,19 @@ import org.wahlzeit.services.EmailAddress;
  * @author dirkriehle
  *
  */
-public class Administrator extends Moderator {
+public class Administrator extends UserRole {
+	public static String ROLE_NAME = "administrator";
+	
+	/**
+	 * 
+	 */
+	protected Administrator(User core) {
+		setCore(core);
+		core.setRights(AccessRights.ADMINISTRATOR);
+	}
 
-	/**
-	 * 
-	 */
-	public Administrator(String myName, String myPassword, String myEmailAddress, long vc) {
-		this(myName, myPassword, EmailAddress.getFromString(myEmailAddress), vc);
-	}
-	
-	/**
-	 * 
-	 */
-	public Administrator(String myName, String myPassword, EmailAddress myEmailAddress, long vc) {
-		initialize(AccessRights.ADMINISTRATOR, myEmailAddress, myName, myPassword, vc);
-	}
-	
-	/**
-	 * 
-	 */
-	protected Administrator() {
-		// do nothing
-	}
-		
+	@Override
+	public String getRoleName() {
+		return ROLE_NAME;
+	}		
 }
