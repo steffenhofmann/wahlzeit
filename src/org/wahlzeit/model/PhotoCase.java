@@ -22,6 +22,8 @@ package org.wahlzeit.model;
 
 import java.sql.*;
 
+import org.wahlzeit.services.Database;
+
 
 /**
  * A photo case is a case where someone flagged a photo as inappropriate.
@@ -44,14 +46,29 @@ public class PhotoCase extends Case {
 	/**
 	 * 
 	 */
+	@Database("id")
 	protected CaseId id = CaseId.NULL_ID; // case id
 	protected int applicationId = 0; // application id (unused on Java level)
+	
+	@Database("photo")
 	protected Photo photo = null; // photo id -> photo
+	
+	@Database("flagger")
 	protected String flagger = "unknown";
+	
+	@Database("reason")
 	protected FlagReason reason = FlagReason.OTHER;
+	
+	@Database("explanation")
 	protected String explanation = "none";	
+	
+	@Database("creation_time")
 	protected long createdOn = System.currentTimeMillis();
+	
+	@Database("was_decided")
 	protected boolean wasDecided = false;
+	
+	@Database("decidedOn")
 	protected long decidedOn = 0;
 	
 	/**
@@ -76,38 +93,6 @@ public class PhotoCase extends Case {
 	 */
 	public String getIdAsString() {
 		return String.valueOf(id);
-	}
-	
-	/**
-	 * 
-	 */
-	public void readFrom(ResultSet rset) throws SQLException {
-		id = new CaseId(rset.getInt("id"));
-		photo = PhotoManager.getPhoto(PhotoId.getId(rset.getInt("photo")));
-		createdOn = rset.getLong("creation_time");
-		
-		flagger = rset.getString("flagger");
-		reason = FlagReason.getFromInt(rset.getInt("reason"));
-		explanation = rset.getString("explanation");
-		
-		wasDecided = rset.getBoolean("was_decided");
-		decidedOn = rset.getLong("decision_time");
-	}
-	
-	/**
-	 * 
-	 */
-	public void writeOn(ResultSet rset) throws SQLException {
-		rset.updateInt("id", id.asInt());
-		rset.updateInt("photo", (photo == null) ? 0 : photo.getId().asInt());
-		rset.updateLong("creation_time", createdOn);
-		
-		rset.updateString("flagger", flagger);
-		rset.updateInt("reason", reason.asInt());
-		rset.updateString("explanation", explanation);
-		
-		rset.updateBoolean("was_decided", wasDecided);
-		rset.updateLong("decision_time", decidedOn);		
 	}
 	
 	/**

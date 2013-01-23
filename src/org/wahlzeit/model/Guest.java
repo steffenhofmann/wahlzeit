@@ -20,6 +20,10 @@
 
 package org.wahlzeit.model;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.wahlzeit.services.*;
 
 /**
@@ -36,5 +40,4 @@ public class Guest extends Client {
 	public Guest() {
 		initialize(AccessRights.GUEST, EmailAddress.EMPTY);
 	}
-
 }

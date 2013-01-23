@@ -94,30 +94,50 @@ public class User extends Client implements Persistent {
 	/**
 	 * 
 	 */
+	@Database("id")
 	protected int id;
+	
+	@Database("name")
 	protected String name;
+	
+	@Database("name_as_tag")
 	protected String nameAsTag;
+	
+	@Database("password")
 	protected String password;
 	
 	/**
 	 * 
 	 */
+	@Database("language")
 	protected Language language = Language.ENGLISH;
+	
+	@Database("notify_about_praise")
 	protected boolean notifyAboutPraise = true;
+	
+	@Database("home_page")
 	protected URL homePage = StringUtil.asUrl(SysConfig.getSiteUrlAsString());
+	
+	@Database("gender")
 	protected Gender gender = Gender.UNDEFINED;
+	
+	@Database("status")
 	protected UserStatus status = UserStatus.CREATED;
+	
+	@Database("confirmation_code")
 	protected long confirmationCode = 0; // 0 means doesn't need confirmation
 
 	/**
 	 * 
 	 */
+	@Database("photo")
 	protected Photo userPhoto = null;
 	protected Set<Photo> photos = new HashSet<Photo>();
 	
 	/**
 	 * 
 	 */
+	@Database("creation_time")
 	protected long creationTime = System.currentTimeMillis();
 	
 	/**
@@ -207,41 +227,9 @@ public class User extends Client implements Persistent {
 	 * @methodtype command
 	 */
 	public void readFrom(ResultSet rset) throws SQLException {
-		id = rset.getInt("id");
-		name = rset.getString("name");
-		nameAsTag = rset.getString("name_as_tag");
-		emailAddress = EmailAddress.getFromString(rset.getString("email_address"));
-		password = rset.getString("password");
-		rights = AccessRights.getFromInt(rset.getInt("rights"));
-		language = Language.getFromInt(rset.getInt("language"));
-		notifyAboutPraise = rset.getBoolean("notify_about_praise");
-		homePage = StringUtil.asUrlOrDefault(rset.getString("home_page"), getDefaultHomePage());
-		gender = Gender.getFromInt(rset.getInt("gender"));
-		status = UserStatus.getFromInt(rset.getInt("status"));
-		confirmationCode = rset.getLong("confirmation_code");
+		DataObject.readFrom(this,rset);
+		homePage = StringUtil.asUrlOrDefault(homePage.toString(), getDefaultHomePage());
 		photos = PhotoManager.getInstance().findPhotosByOwner(name);
-		userPhoto = PhotoManager.getPhoto(PhotoId.getId(rset.getInt("photo")));
-		creationTime = rset.getLong("creation_time");
-	}
-	
-	/**
-	 * 
-	 */
-	public void writeOn(ResultSet rset) throws SQLException {
-		rset.updateInt("id", id);
-		rset.updateString("name", name);
-		rset.updateString("name_as_tag", nameAsTag);
-		rset.updateString("email_address", (emailAddress == null) ? "" : emailAddress.asString());
-		rset.updateString("password", password);
-		rset.updateInt("rights", rights.asInt());
-		rset.updateInt("language", language.asInt());
-		rset.updateBoolean("notify_about_praise", notifyAboutPraise);
-		rset.updateString("home_page", homePage.toString());
-		rset.updateInt("gender", gender.asInt());
-		rset.updateInt("status", status.asInt());
-		rset.updateLong("confirmation_code", confirmationCode);
-		rset.updateInt("photo", (userPhoto == null) ? 0 : userPhoto.getId().asInt());
-		rset.updateLong("creation_time", creationTime);
 	}
 
 	/**
@@ -521,6 +509,13 @@ public class User extends Client implements Persistent {
 				}
 			}
 		};
+	}
+	
+	/**
+	 * 
+	 */
+	public void writeOn(ResultSet rset) throws SQLException {
+		DataObject.writeOn(this, rset);
 	}
 	
 }

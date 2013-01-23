@@ -20,6 +20,9 @@
 
 package org.wahlzeit.model;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 import org.wahlzeit.services.*;
 
 /**
@@ -29,16 +32,17 @@ import org.wahlzeit.services.*;
  * @author dirkriehle
  *
  */
-public abstract class Client {
-	
+public abstract class Client{
 	/**
 	 * 
 	 */
+	@Database("rights")
 	protected AccessRights rights = AccessRights.NONE;
 	
 	/**
 	 * 
 	 */
+	@Database("email_address")
 	protected EmailAddress emailAddress = EmailAddress.EMPTY;
 	
 	/**
