@@ -21,6 +21,7 @@
 package org.wahlzeit.services;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -91,33 +92,37 @@ public abstract class DataObject implements Persistent {
 		incWriteCount();
 	}
 	
+	/**
+	 * 
+	 */
 	public void writeOn(ResultSet rset) throws SQLException{
 		writeOn(this, rset);
 	}
 	
+	/**
+	 * 
+	 */
 	public static void writeOn(Persistent pers, ResultSet rset) throws SQLException{
 		writeOn(pers, pers.getClass(), rset);
 	}
 	
+	/**
+	 * 
+	 */
 	public static void writeOn(Persistent pers, Class<?> c, ResultSet rset) throws SQLException{
-		System.out.println("##### start writing on "+pers.getClass());
-		
-		//System.out.println()
 		try{
 			Field fields[] = c.getDeclaredFields();
 			String db = "";
-			Database annotation = null;
+			DatabaseColumn annotation = null;
 			Method m = null;
 			
 			for(Field f : fields){
 				f.setAccessible(true);
 				
-				annotation = f.getAnnotation(Database.class);
+				annotation = f.getAnnotation(DatabaseColumn.class);
 				
 				if(annotation != null){
 					db = annotation.value();
-					
-					System.out.println("writing to: "+db+ " ("+f.getType()+")");
 					
 					if (f.getType() == String.class)
 						rset.updateString(db,(String)f.get(pers));
@@ -140,12 +145,10 @@ public abstract class DataObject implements Persistent {
 					}else if (f.getType() == URL.class)
 						rset.updateString(db,((URL)f.get(pers)).toString());
 					else if ((m = getMethod(f.getType(), "asInt", null)) != null){
-						System.out.println("invoking");
 						Integer o = (Integer)m.invoke(f.get(pers));
 						int i =o;
 						rset.updateInt(db, i);
 					}else if ((m = getMethod(f.getType(), "asString", null)) != null){
-						System.out.println("invoking");
 						String o = (String)m.invoke(f.get(pers));
 						rset.updateString(db, o);
 					}
@@ -156,13 +159,16 @@ public abstract class DataObject implements Persistent {
 			if(c.getSuperclass() != null)
 				DataObject.writeOn(pers,c.getSuperclass(),rset);
 			
-		}catch(Exception e){
-			System.out.println("MESSAGE: "+e.getMessage());
-			
+		}catch(IllegalAccessException e){
+			throw new SQLException("IllegalAccessException: "+e.getMessage());
+		}catch(InvocationTargetException e){
+			throw new SQLException("InvocationTargetException: "+e.getMessage());
 		}
-	
 	}
 	
+	/**
+	 * 
+	 */
 	private static Method getMethod(Class<?> c, String name, Class<?> arg1){
 		try{
 			if(arg1 == null)
@@ -174,34 +180,37 @@ public abstract class DataObject implements Persistent {
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	public void readFrom(ResultSet rset) throws SQLException{
 		readFrom(this, rset);
 	}
 	
+	/**
+	 * 
+	 */
 	public static void readFrom(Persistent pers, ResultSet rset) throws SQLException{
 		readFrom(pers, pers.getClass(), rset);
 	}
 	
+	/**
+	 * 
+	 */
 	public static void readFrom(Persistent pers, Class<?> c, ResultSet rset) throws SQLException {
-		
-		System.out.println("##### started reading on "+pers.getClass());
-		
-		//System.out.println()
 		try{
 			Field fields[] = c.getDeclaredFields();
 			String db = "";
-			Database annotation = null;
+			DatabaseColumn annotation = null;
 			Method m = null;
 			
 			for(Field f : fields){
 				f.setAccessible(true);
 				
-				annotation = f.getAnnotation(Database.class);
+				annotation = f.getAnnotation(DatabaseColumn.class);
 				
 				if(annotation != null){
 					db = annotation.value();
-					
-					System.out.println("reading from: "+db+ " ("+f.getType()+")");
 					
 					if (f.getType() == String.class)
 						f.set(pers, rset.getString(db));
@@ -218,7 +227,7 @@ public abstract class DataObject implements Persistent {
 					else if(f.getType() == Photo.class){
 						f.set(pers, PhotoManager.getPhoto(PhotoId.getId(rset.getInt(db))));
 					}else if(f.getType() == EmailAddress.class){
-						if(rset.getString(db) != null || rset.getString(db).equals(""))
+						if(rset.getString(db) == null || rset.getString(db).equals(""))
 							f.set(pers, EmailAddress.EMPTY);
 						else
 							f.set(pers, EmailAddress.getFromString(rset.getString(db)));
@@ -229,11 +238,7 @@ public abstract class DataObject implements Persistent {
 					}else if (f.getType() == Tags.class){
 						f.set(pers, new Tags(rset.getString(db)));
 					}else if ((m = getMethod(f.getType(), "getFromInt", int.class)) != null){
-						System.out.println("invoking");
-						System.out.println("VALUE = "+rset.getInt(db));
 						f.set(pers, m.invoke(null,rset.getInt(db)));
-						if(f.get(pers) instanceof AccessRights)
-							System.out.println("VALUE AFTER= "+((AccessRights)f.get(pers)).asInt());
 					}
 				}
 			}
@@ -242,11 +247,10 @@ public abstract class DataObject implements Persistent {
 			if(c.getSuperclass() != null)
 				DataObject.readFrom(pers,c.getSuperclass(),rset);
 			
-		}catch(Exception e){
-			System.out.println("MESSAGE: "+e.getMessage());
-			
+		}catch(IllegalAccessException e){
+			throw new SQLException("IllegalAccessException: "+e.getMessage());
+		}catch(InvocationTargetException e){
+			throw new SQLException("InvocationTargetException: "+e.getMessage());
 		}
-		
-		
 	}
 }

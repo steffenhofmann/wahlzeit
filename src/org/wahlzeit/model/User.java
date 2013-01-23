@@ -94,50 +94,50 @@ public class User extends Client implements Persistent {
 	/**
 	 * 
 	 */
-	@Database("id")
+	@DatabaseColumn("id")
 	protected int id;
 	
-	@Database("name")
+	@DatabaseColumn("name")
 	protected String name;
 	
-	@Database("name_as_tag")
+	@DatabaseColumn("name_as_tag")
 	protected String nameAsTag;
 	
-	@Database("password")
+	@DatabaseColumn("password")
 	protected String password;
 	
 	/**
 	 * 
 	 */
-	@Database("language")
+	@DatabaseColumn("language")
 	protected Language language = Language.ENGLISH;
 	
-	@Database("notify_about_praise")
+	@DatabaseColumn("notify_about_praise")
 	protected boolean notifyAboutPraise = true;
 	
-	@Database("home_page")
+	@DatabaseColumn("home_page")
 	protected URL homePage = StringUtil.asUrl(SysConfig.getSiteUrlAsString());
 	
-	@Database("gender")
+	@DatabaseColumn("gender")
 	protected Gender gender = Gender.UNDEFINED;
 	
-	@Database("status")
+	@DatabaseColumn("status")
 	protected UserStatus status = UserStatus.CREATED;
 	
-	@Database("confirmation_code")
+	@DatabaseColumn("confirmation_code")
 	protected long confirmationCode = 0; // 0 means doesn't need confirmation
 
 	/**
 	 * 
 	 */
-	@Database("photo")
+	@DatabaseColumn("photo")
 	protected Photo userPhoto = null;
 	protected Set<Photo> photos = new HashSet<Photo>();
 	
 	/**
 	 * 
 	 */
-	@Database("creation_time")
+	@DatabaseColumn("creation_time")
 	protected long creationTime = System.currentTimeMillis();
 	
 	/**

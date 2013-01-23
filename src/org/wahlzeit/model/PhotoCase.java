@@ -22,7 +22,7 @@ package org.wahlzeit.model;
 
 import java.sql.*;
 
-import org.wahlzeit.services.Database;
+import org.wahlzeit.services.DatabaseColumn;
 
 
 /**
@@ -46,29 +46,29 @@ public class PhotoCase extends Case {
 	/**
 	 * 
 	 */
-	@Database("id")
+	@DatabaseColumn("id")
 	protected CaseId id = CaseId.NULL_ID; // case id
 	protected int applicationId = 0; // application id (unused on Java level)
 	
-	@Database("photo")
+	@DatabaseColumn("photo")
 	protected Photo photo = null; // photo id -> photo
 	
-	@Database("flagger")
+	@DatabaseColumn("flagger")
 	protected String flagger = "unknown";
 	
-	@Database("reason")
+	@DatabaseColumn("reason")
 	protected FlagReason reason = FlagReason.OTHER;
 	
-	@Database("explanation")
+	@DatabaseColumn("explanation")
 	protected String explanation = "none";	
 	
-	@Database("creation_time")
+	@DatabaseColumn("creation_time")
 	protected long createdOn = System.currentTimeMillis();
 	
-	@Database("was_decided")
+	@DatabaseColumn("was_decided")
 	protected boolean wasDecided = false;
 	
-	@Database("decidedOn")
+	@DatabaseColumn("decidedOn")
 	protected long decidedOn = 0;
 	
 	/**

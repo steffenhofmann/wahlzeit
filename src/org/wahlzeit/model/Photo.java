@@ -63,68 +63,68 @@ public class Photo extends DataObject {
 	/**
 	 * 
 	 */
-	@Database("id")
+	@DatabaseColumn("id")
 	protected PhotoId id = null;
 	
 	/**
 	 * 
 	 */
-	@Database("owner_id")
+	@DatabaseColumn("owner_id")
 	protected int ownerId = 0;
 	
-	@Database("owner_name")
+	@DatabaseColumn("owner_name")
 	protected String ownerName;
 
 	/**
 	 * 
 	 */
-	@Database("owner_notify_about_praise")
+	@DatabaseColumn("owner_notify_about_praise")
 	protected boolean ownerNotifyAboutPraise = false;
 	
-	@Database("owner_email_address")
+	@DatabaseColumn("owner_email_address")
 	protected EmailAddress ownerEmailAddress = EmailAddress.EMPTY;
 	
-	@Database("owner_language")
+	@DatabaseColumn("owner_language")
 	protected Language ownerLanguage = Language.ENGLISH;
 	
-	@Database("owner_home_page")
+	@DatabaseColumn("owner_home_page")
 	protected URL ownerHomePage;
 	
 	/**
 	 * 
 	 */
-	@Database("width")
+	@DatabaseColumn("width")
 	protected int width;
 	
-	@Database("height")
+	@DatabaseColumn("height")
 	protected int height;
 	protected PhotoSize maxPhotoSize = PhotoSize.MEDIUM; // derived
 	
 	/**
 	 * 
 	 */
-	@Database("tags")
+	@DatabaseColumn("tags")
 	protected Tags tags = Tags.EMPTY_TAGS;
 
 	/**
 	 * 
 	 */
-	@Database("status")
+	@DatabaseColumn("status")
 	protected PhotoStatus status = PhotoStatus.VISIBLE;
 	
 	/**
 	 * 
 	 */
-	@Database("praise_sum")
+	@DatabaseColumn("praise_sum")
 	protected int praiseSum = 10;
 	
-	@Database("no_votes")
+	@DatabaseColumn("no_votes")
 	protected int noVotes = 1;
 	
 	/**
 	 * 
 	 */
-	@Database("creation_time")
+	@DatabaseColumn("creation_time")
 	protected long creationTime = System.currentTimeMillis();
 	
 	/**

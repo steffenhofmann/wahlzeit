@@ -36,13 +36,13 @@ public abstract class Client{
 	/**
 	 * 
 	 */
-	@Database("rights")
+	@DatabaseColumn("rights")
 	protected AccessRights rights = AccessRights.NONE;
 	
 	/**
 	 * 
 	 */
-	@Database("email_address")
+	@DatabaseColumn("email_address")
 	protected EmailAddress emailAddress = EmailAddress.EMPTY;
 	
 	/**
