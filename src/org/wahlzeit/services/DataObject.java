@@ -21,6 +21,7 @@
 package org.wahlzeit.services;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.ResultSet;
@@ -99,13 +100,14 @@ public abstract class DataObject implements Persistent {
 	}
 	
 	public static void writeOn(Persistent pers, Class<?> c, ResultSet rset) throws SQLException{
-		System.out.println("start writing on "+pers.getClass());
+		System.out.println("##### start writing on "+pers.getClass());
 		
 		//System.out.println()
 		try{
 			Field fields[] = c.getDeclaredFields();
 			String db = "";
 			Database annotation = null;
+			Method m = null;
 			
 			for(Field f : fields){
 				f.setAccessible(true);
@@ -117,37 +119,7 @@ public abstract class DataObject implements Persistent {
 					
 					System.out.println("writing to: "+db+ " ("+f.getType()+")");
 					
-					if(f.getType() == PhotoId.class)
-						rset.updateInt(db,((PhotoId)f.get(pers)).asInt());
-					else if(f.getType() == CaseId.class)
-						rset.updateInt(db,((CaseId)f.get(pers)).asInt());
-					else if(f.getType() == AccessRights.class)
-						rset.updateInt(db,((AccessRights)f.get(pers)).asInt());
-					else if(f.getType() == Gender.class)
-						rset.updateInt(db,((Gender)f.get(pers)).asInt());
-					else if(f.getType() == FlagReason.class)
-						rset.updateInt(db,((FlagReason)f.get(pers)).asInt());
-					else if(f.getType() == Photo.class){
-						if(f.get(pers) != null)
-							rset.updateInt(db,((Photo)f.get(pers)).getId().asInt());
-						else
-							rset.updateInt(db,0);
-					}else if(f.getType() == Tags.class)
-						rset.updateString(db,((Tags)f.get(pers)).asString());
-					else if(f.getType() == PhotoStatus.class)
-						rset.updateInt(db,((PhotoStatus)f.get(pers)).asInt());
-					else if(f.getType() == UserStatus.class)
-						rset.updateInt(db,((UserStatus)f.get(pers)).asInt());
-					else if(f.getType() == Language.class)
-						rset.updateInt(db,((Language)f.get(pers)).asInt());
-					else if(f.getType() == EmailAddress.class){
-						if(f.get(pers) != null)
-							rset.updateString(db,((EmailAddress)f.get(pers)).asString());
-						else
-							rset.updateString(db,"");
-					}else if (f.getType() == URL.class)
-						rset.updateString(db,((URL)f.get(pers)).toString());
-					else if (f.getType() == String.class)
+					if (f.getType() == String.class)
 						rset.updateString(db,(String)f.get(pers));
 					else if (f.getType() == int.class)
 						rset.updateInt(db,((Integer)f.get(pers)));
@@ -155,6 +127,28 @@ public abstract class DataObject implements Persistent {
 						rset.updateBoolean(db,(Boolean)f.get(pers));
 					else if (f.getType() == Long.class)
 						rset.updateLong(db,(Long)f.get(pers));
+					else if(f.getType() == Photo.class){
+						if(f.get(pers) != null)
+							rset.updateInt(db,((Photo)f.get(pers)).getId().asInt());
+						else
+							rset.updateInt(db,0);
+					}else if(f.getType() == EmailAddress.class){
+						if(f.get(pers) != null)
+							rset.updateString(db,((EmailAddress)f.get(pers)).asString());
+						else
+							rset.updateString(db,"");
+					}else if (f.getType() == URL.class)
+						rset.updateString(db,((URL)f.get(pers)).toString());
+					else if ((m = getMethod(f.getType(), "asInt", null)) != null){
+						System.out.println("invoking");
+						Integer o = (Integer)m.invoke(f.get(pers));
+						int i =o;
+						rset.updateInt(db, i);
+					}else if ((m = getMethod(f.getType(), "asString", null)) != null){
+						System.out.println("invoking");
+						String o = (String)m.invoke(f.get(pers));
+						rset.updateString(db, o);
+					}
 				}
 			}
 			
@@ -169,6 +163,17 @@ public abstract class DataObject implements Persistent {
 	
 	}
 	
+	private static Method getMethod(Class<?> c, String name, Class<?> arg1){
+		try{
+			if(arg1 == null)
+				return c.getMethod(name);
+			else
+				return c.getMethod(name, arg1);
+		}catch(Exception e){
+			return null;
+		}
+	}
+	
 	public void readFrom(ResultSet rset) throws SQLException{
 		readFrom(this, rset);
 	}
@@ -179,13 +184,14 @@ public abstract class DataObject implements Persistent {
 	
 	public static void readFrom(Persistent pers, Class<?> c, ResultSet rset) throws SQLException {
 		
-		System.out.println("started reading on "+pers.getClass());
+		System.out.println("##### started reading on "+pers.getClass());
 		
 		//System.out.println()
 		try{
 			Field fields[] = c.getDeclaredFields();
 			String db = "";
 			Database annotation = null;
+			Method m = null;
 			
 			for(Field f : fields){
 				f.setAccessible(true);
@@ -197,36 +203,7 @@ public abstract class DataObject implements Persistent {
 					
 					System.out.println("reading from: "+db+ " ("+f.getType()+")");
 					
-					if(f.getType() == PhotoId.class)
-						f.set(pers, PhotoId.getId(rset.getInt(db)));
-					else if(f.getType() == CaseId.class)
-						f.set(pers, new CaseId(rset.getInt(db)));
-					else if(f.getType() == AccessRights.class)
-						f.set(pers, AccessRights.getFromInt(rset.getInt(db)));
-					else if(f.getType() == Gender.class)
-						f.set(pers, Gender.getFromInt(rset.getInt(db)));
-					else if(f.getType() == FlagReason.class)
-						f.set(pers, FlagReason.getFromInt(rset.getInt(db)));
-					else if(f.getType() == Photo.class)
-							f.set(pers, PhotoManager.getPhoto(PhotoId.getId(rset.getInt(db))));
-					else if(f.getType() == Tags.class)
-						f.set(pers, new Tags(rset.getString(db)));
-					else if(f.getType() == PhotoStatus.class)
-						f.set(pers, PhotoStatus.getFromInt(rset.getInt(db)));
-					else if(f.getType() == UserStatus.class)
-						f.set(pers, UserStatus.getFromInt(rset.getInt(db)));
-					else if(f.getType() == Language.class)
-						f.set(pers, Language.getFromInt(rset.getInt(db)));
-					else if(f.getType() == EmailAddress.class){
-						if(rset.getString(db).equals(""))
-							f.set(pers, null);
-						else
-							f.set(pers, EmailAddress.getFromString(rset.getString(db)));
-					}else if (f.getType() == URL.class){
-						if(StringUtil.isValidURL(rset.getString(db))){
-							f.set(pers, StringUtil.asUrl(rset.getString(db)));
-						}
-					}else if (f.getType() == String.class)
+					if (f.getType() == String.class)
 						f.set(pers, rset.getString(db));
 					else if (f.getType() == int.class)
 						f.set(pers, rset.getInt(db));
@@ -234,6 +211,30 @@ public abstract class DataObject implements Persistent {
 						f.set(pers, rset.getBoolean(db));
 					else if (f.getType() == Long.class)
 						f.set(pers, rset.getLong(db));
+					else if(f.getType() == CaseId.class)
+						f.set(pers, new CaseId(rset.getInt(db)));
+					if(f.getType() == PhotoId.class)
+						f.set(pers, PhotoId.getId(rset.getInt(db)));
+					else if(f.getType() == Photo.class){
+						f.set(pers, PhotoManager.getPhoto(PhotoId.getId(rset.getInt(db))));
+					}else if(f.getType() == EmailAddress.class){
+						if(rset.getString(db) != null || rset.getString(db).equals(""))
+							f.set(pers, EmailAddress.EMPTY);
+						else
+							f.set(pers, EmailAddress.getFromString(rset.getString(db)));
+					}else if (f.getType() == URL.class){
+						if(StringUtil.isValidURL(rset.getString(db))){
+							f.set(pers, StringUtil.asUrl(rset.getString(db)));
+						}
+					}else if (f.getType() == Tags.class){
+						f.set(pers, new Tags(rset.getString(db)));
+					}else if ((m = getMethod(f.getType(), "getFromInt", int.class)) != null){
+						System.out.println("invoking");
+						System.out.println("VALUE = "+rset.getInt(db));
+						f.set(pers, m.invoke(null,rset.getInt(db)));
+						if(f.get(pers) instanceof AccessRights)
+							System.out.println("VALUE AFTER= "+((AccessRights)f.get(pers)).asInt());
+					}
 				}
 			}
 			
