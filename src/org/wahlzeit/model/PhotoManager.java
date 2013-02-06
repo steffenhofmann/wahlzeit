@@ -143,7 +143,7 @@ public class PhotoManager extends ObjectManager {
 	/**
 	 * 
 	 */
-	public void addPhoto(Photo photo) {
+	public void addPhoto(Photo photo) throws InsufficientDBResourcesException{
 		PhotoId id = photo.getId();
 		assertIsNewPhoto(id);
 		doAddPhoto(photo);
@@ -153,6 +153,9 @@ public class PhotoManager extends ObjectManager {
 			createObject(photo, stmt, id.asInt());
 			Wahlzeit.saveGlobals();
 		} catch (SQLException sex) {
+			if(sex.getErrorCode() == DatabaseConnection.INSUFFICIENT_RESOURCES)
+				throw new InsufficientDBResourcesException();
+			
 			SysLog.logThrowable(sex);
 		}
 	}

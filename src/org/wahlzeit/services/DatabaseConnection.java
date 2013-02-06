@@ -31,6 +31,7 @@ import java.util.*;
  *
  */
 public class DatabaseConnection {
+	public static int INSUFFICIENT_RESOURCES = 53000;
 	
 	/**
 	 * 

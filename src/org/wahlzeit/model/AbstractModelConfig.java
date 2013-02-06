@@ -530,6 +530,13 @@ public abstract class AbstractModelConfig extends AbstractConfig implements Mode
 	public String getPhotoUploadFailed() { 
 		return doGetValue("PhotoUploadFailed"); 
 	}
+	
+	/**
+	 * 
+	 */
+	public String getInsufficientDBResources() { 
+		return doGetValue("InsufficientDBResources"); 
+	}
 
 	/**
 	 * 

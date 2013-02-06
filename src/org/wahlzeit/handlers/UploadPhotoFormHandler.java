@@ -68,6 +68,7 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 			PhotoManager pm = PhotoManager.getInstance();
 			String sourceFileName = ctx.getAsString(args, "fileName");
 			File file = new File(sourceFileName);
+			
 			Photo photo = pm.createPhoto(file);
 
 			String targetFileName = SysConfig.getBackupDirAsString() + photo.getId().asString();
@@ -85,6 +86,9 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 			UserLog.log(sb);
 			
 			ctx.setTwoLineMessage(ctx.cfg().getPhotoUploadSucceeded(), ctx.cfg().getKeepGoing());
+		} catch (InsufficientDBResourcesException ex){ 
+			SysLog.logThrowable(ex);
+			ctx.setMessage(ctx.cfg().getInsufficientDBResources());
 		} catch (Exception ex) {
 			SysLog.logThrowable(ex);
 			ctx.setMessage(ctx.cfg().getPhotoUploadFailed());

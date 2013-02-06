@@ -137,7 +137,7 @@ public class UserManager extends ObjectManager {
 		} else {
 			SysLog.logInfo("received NONE rights value");
 		}
-
+		
 		return result;
 	}
 	

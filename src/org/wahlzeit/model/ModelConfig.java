@@ -66,7 +66,8 @@ public interface ModelConfig extends Configuration {
 	public String getEmailAddressIsMissing();
 	public String getEmailAddressIsInvalid();
 	public String getUrlIsInvalid();
-
+	public String getInsufficientDBResources();
+	
 	// General messages
 	public String getKeepGoing();
 	public String getContinueWithTellFriends();
